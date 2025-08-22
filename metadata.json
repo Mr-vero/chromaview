@@ -1,0 +1,7 @@
+{
+  "name": "Chroma View: Real-time Color Detector",
+  "description": "Point your camera at any object to instantly detect its color. The app extracts and displays the exact color swatch, HEX, and RGB codes in real-time with a clean, focused interface.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
