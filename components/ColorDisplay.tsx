@@ -21,10 +21,10 @@ const ColorInfoChip: React.FC<{ label: string, value: string }> = ({ label, valu
             <span className="text-xs text-gray-300 uppercase tracking-wider">{label}</span>
             <button 
                 onClick={handleCopy}
-                className="mt-1 text-lg font-mono tracking-wider bg-gray-900/50 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors hover:bg-gray-800/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-indigo-500"
+                className="mt-1 text-sm sm:text-lg font-mono tracking-wider bg-gray-900/50 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center space-x-2 transition-colors hover:bg-gray-800/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-indigo-500"
             >
                 <span>{copied ? 'Copied!' : value}</span>
-                {!copied && <CopyIcon className="w-4 h-4 text-gray-400"/>}
+                {!copied && <CopyIcon className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400"/>}
             </button>
         </div>
     );
@@ -51,28 +51,28 @@ export const ColorDisplay: React.FC<ColorDisplayProps> = ({ color }) => {
     }
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 pointer-events-auto">
-        <div className="max-w-md mx-auto bg-black/50 backdrop-blur-lg rounded-2xl shadow-2xl p-6 transition-all duration-300 ease-in-out">
+    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-6 pointer-events-auto">
+        <div className="max-w-md mx-auto bg-black/50 backdrop-blur-lg rounded-2xl shadow-2xl p-3 sm:p-4 md:p-6 transition-all duration-300 ease-in-out">
             {displayColor ? (
-                <div className="flex items-center justify-around space-x-4">
+                <div className="flex flex-col sm:flex-row items-center justify-around gap-3 sm:gap-4">
                     <div className="flex flex-col items-center space-y-2">
                          <div
-                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white/50 shadow-lg transition-colors duration-200"
+                            className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border-4 border-white/50 shadow-lg transition-colors duration-200"
                             style={{ backgroundColor: displayColor.hex }}
                         ></div>
-                        <span className={`text-sm ${textColor} font-semibold`} style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
+                        <span className={`text-xs sm:text-sm ${textColor} font-semibold`} style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
                             Live
                         </span>
                     </div>
 
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
                         <ColorInfoChip label="HEX" value={displayColor.hex} />
                         <ColorInfoChip label="RGB" value={displayColor.rgb} />
                     </div>
                 </div>
             ) : (
-                <div className="text-center text-gray-300 py-8">
-                    <p>Scanning for color...</p>
+                <div className="text-center text-gray-300 py-4 sm:py-6 md:py-8">
+                    <p className="text-sm sm:text-base">Scanning for color...</p>
                 </div>
             )}
         </div>

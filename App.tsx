@@ -44,11 +44,11 @@ const App: React.FC = () => {
       )}
 
       {permission === 'denied' && (
-        <div className="text-center p-8 bg-gray-900 rounded-lg shadow-lg max-w-sm">
-            <h2 className="text-2xl font-bold text-red-400 mb-4">Camera Access Denied</h2>
-            <p className="text-gray-300">This application requires camera access to detect colors.</p>
-            <p className="text-gray-400 mt-2 text-sm">Please enable camera permissions in your browser settings and refresh the page.</p>
-            {error && <p className="text-red-500 mt-4 text-xs bg-red-900/50 p-2 rounded">{error}</p>}
+        <div className="text-center p-6 sm:p-8 bg-gray-900 rounded-lg shadow-lg max-w-sm mx-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-red-400 mb-3 sm:mb-4">Camera Access Denied</h2>
+            <p className="text-sm sm:text-base text-gray-300">This application requires camera access to detect colors.</p>
+            <p className="text-gray-400 mt-2 text-xs sm:text-sm">Please enable camera permissions in your browser settings and refresh the page.</p>
+            {error && <p className="text-red-500 mt-3 sm:mt-4 text-xs bg-red-900/50 p-2 rounded">{error}</p>}
         </div>
       )}
     </main>

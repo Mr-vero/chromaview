@@ -1,7 +1,7 @@
 
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import type { ColorInfo } from '../types';
-import { TargetIcon } from './Icons';
+import { TargetIcon, SwitchCameraIcon } from './Icons';
 
 interface CameraFeedProps {
   onColorDetect: (color: ColorInfo) => void;
@@ -22,6 +22,9 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({ onColorDetect, onPermiss
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameId = useRef<number | null>(null);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+  const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const detectColor = useCallback(() => {
     if (videoRef.current && canvasRef.current && videoRef.current.readyState >= 2) {
@@ -54,15 +57,33 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({ onColorDetect, onPermiss
     animationFrameId.current = requestAnimationFrame(detectColor);
   }, [onColorDetect]);
 
-  const startCamera = useCallback(async () => {
+  const checkMultipleCameras = useCallback(async () => {
     try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      setHasMultipleCameras(videoDevices.length > 1);
+    } catch (err) {
+      console.error('Error enumerating devices:', err);
+    }
+  }, []);
+
+  const startCamera = useCallback(async (mode: 'user' | 'environment' = facingMode) => {
+    try {
+      // Stop existing stream if any
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
-          facingMode: 'environment',
+          facingMode: mode,
           width: { ideal: 1920 },
           height: { ideal: 1080 }
         } 
       });
+      
+      streamRef.current = stream;
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
@@ -78,18 +99,24 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({ onColorDetect, onPermiss
       }
       onPermissionDenied(errorMessage);
     }
-  }, [onPermissionGranted, onPermissionDenied, detectColor]);
+  }, [facingMode, onPermissionGranted, onPermissionDenied, detectColor]);
+
+  const switchCamera = useCallback(() => {
+    const newMode = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(newMode);
+    startCamera(newMode);
+  }, [facingMode, startCamera]);
   
   useEffect(() => {
     startCamera();
+    checkMultipleCameras();
 
     return () => {
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -102,6 +129,15 @@ export const CameraFeed: React.FC<CameraFeedProps> = ({ onColorDetect, onPermiss
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <TargetIcon />
       </div>
+      {hasMultipleCameras && (
+        <button
+          onClick={switchCamera}
+          className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white p-3 rounded-full shadow-lg hover:bg-black/70 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+          aria-label="Switch camera"
+        >
+          <SwitchCameraIcon className="w-6 h-6" />
+        </button>
+      )}
     </div>
   );
 };
